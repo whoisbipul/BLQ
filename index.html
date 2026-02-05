@@ -1,1 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Strategic Overview | Q3 2026</title>
+    <style>
+      :root {
+        --primary-red: #b71c1c; /* Corporate Deep Red */
+        --accent-red: #d32f2f;
+        --bg-color: #f8f9fa;
+        --text-dark: #2c3e50;
+        --text-light: #ffffff;
+        --card-bg: #ffffff;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
 
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-dark);
+        overflow: hidden; /* Prevent scrolling, treat like slides */
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        transition: background-color 0.5s ease;
+      }
+
+      /* --- UI CONTROLS --- */
+      .controls-top {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        gap: 15px;
+      }
+
+      .btn {
+        background: white;
+        border: 1px solid #ddd;
+        padding: 10px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text-dark);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-red);
+        color: var(--primary-red);
+      }
+
+      .btn-primary {
+        background: var(--primary-red);
+        color: white;
+        border: none;
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-red);
+        color: white;
+      }
+
+      .navigation-bar {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 20px;
+        z-index: 1000;
+        background: white;
+        padding: 15px 30px;
+        border-radius: 50px;
+        box-shadow: var(--shadow);
+      }
+
+      /* --- SLIDE CONTAINER --- */
+      .presentation-container {
+        flex: 1;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .slide {
+        position: absolute;
+        width: 80%;
+        max-width: 1200px;
+        height: 80%;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .slide.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* --- TYPOGRAPHY & LAYOUT --- */
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 20px;
+        color: var(--primary-red);
+      }
+
+      h2 {
+        font-size: 2.2rem;
+        margin-bottom: 40px;
+        position: relative;
+        padding-bottom: 15px;
+      }
+
+      h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--primary-red);
+      }
+
+      p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #555;
+        max-width: 700px;
+      }
+
+      /* --- COMPONENTS: DASHBOARD (SLIDE 2) --- */
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      .kpi-card {
+        background: var(--card-bg);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        border-top: 4px solid var(--primary-red);
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .kpi-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .kpi-value {
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: var(--primary-red);
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      .kpi-label {
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #777;
+        font-weight: 600;
+      }
+
+      /* --- COMPONENTS: TIMELINE (SLIDE 3) --- */
+      .timeline-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 60px;
+        position: relative;
+      }
+
+      .timeline-line {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: #e0e0e0;
+        z-index: 0;
+      }
+
+      .timeline-item {
+        position: relative;
+        z-index: 1;
+        width: 30%;
+        padding-top: 50px;
+      }
+
+      .timeline-dot {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 40px;
+        background: white;
+        border: 3px solid var(--primary-red);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: var(--primary-red);
+        transition: var(--transition);
+      }
+
+      .timeline-item:hover .timeline-dot {
+        background: var(--primary-red);
+        color: white;
+        transform: translateX(-50%) scale(1.1);
+      }
+
+      .timeline-card {
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        border-left: 3px solid var(--primary-red);
+      }
+
+      .timeline-month {
+        font-size: 0.9rem;
+        color: #999;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+      }
+
+      .timeline-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      /* --- ANIMATIONS --- */
+      .fade-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUpAnim 0.8s forwards;
+      }
+
+      .delay-1 { animation-delay: 0.2s; }
+      .delay-2 { animation-delay: 0.4s; }
+      .delay-3 { animation-delay: 0.6s; }
+
+      @keyframes fadeUpAnim {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* --- PRESENTER MODE --- */
+      body.presenter-mode .controls-top .btn:not(#togglePresenter) {
+        display: none;
+      }
+
+      body.presenter-mode {
+        background-color: white;
+      }
+
+      body.presenter-mode .slide {
+        width: 95%;
+        height: 90%;
+        max-width: none;
+        align-items: flex-start; /* Align left for reading */
+        padding: 40px;
+      }
+
+      body.presenter-mode h1 { font-size: 5rem; }
+      body.presenter-mode h2 { font-size: 3.5rem; }
+      body.presenter-mode p { font-size: 1.8rem; max-width: 90%; }
+      body.presenter-mode .kpi-value { font-size: 5rem; }
+      body.presenter-mode .kpi-label { font-size: 1.5rem; }
+      body.presenter-mode .timeline-title { font-size: 1.8rem; }
+      body.presenter-mode .timeline-card { padding: 40px; }
+
+      /* Visual Indicator for Presenter Mode */
+      #presenterIndicator {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--primary-red);
+        z-index: 2000;
+      }
+
+      body.presenter-mode #presenterIndicator { display: block; }
+    </style>
+  </head>
+  <body>
+    <!-- Presenter Mode Indicator Line -->
+    <div id="presenterIndicator"></div>
+
+    <!-- Top Controls -->
+    <div class="controls-top">
+      <div style="font-weight: bold; color: var(--primary-red); display: flex; align-items: center; margin-right: auto;">
+        CORP<span style="color: #333">VISION</span>
+      </div>
+      <button class="btn" id="togglePresenter" onclick="togglePresenterMode()">
+        <span>Presenter Mode</span>
+      </button>
+    </div>
+
+    <!-- Main Presentation Area -->
+    <div class="presentation-container">
+
+      <!-- Slide 1: Title -->
+      <div class="slide active" id="slide-1">
+        <div style="display: flex; height: 100%; flex-direction: column; justify-content: center;">
+          <h4 class="fade-up" style="color: #777; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;">Q3 2026 Strategy</h4>
+          <h1 class="fade-up delay-1">Accelerating Growth<br>Through Innovation</h1>
+          <p class="fade-up delay-2">A comprehensive overview of our performance metrics, strategic milestones, and the 90-day roadmap for market expansion.</p>
+          <div class="fade-up delay-3" style="margin-top: 40px;">
+            <button class="btn btn-primary" onclick="nextSlide()">Begin Presentation &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2: KPI Dashboard -->
+      <div class="slide" id="slide-2">
+        <h2>Performance Dashboard</h2>
+        <p>Key Performance Indicators showing Year-over-Year growth.</p>
+        
+        <div class="kpi-grid">
+          <div class="kpi-card fade-up delay-1">
+            <span class="kpi-value" data-target="24">0</span>
+            <span class="kpi-label">% Revenue Growth</span>
+          </div>
+          <div class="kpi-card fade-up delay-2">
+            <span class="kpi-value" data-target="1500">0</span>
+            <span class="kpi-label">New Clients</span>
+          </div>
+          <div class="kpi-card fade-up delay-3">
+            <span class="kpi-value" data-target="98">0</span>
+            <span class="kpi-label">% Retention Rate</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: 90-Day Plan -->
+      <div class="slide" id="slide-3">
+        <h2>90-Day Execution Plan</h2>
+        <p>Strategic roadmap for Q4 implementation.</p>
+
+        <div class="timeline-container fade-up delay-1">
+          <div class="timeline-line"></div>
+          
+          <div class="timeline-item">
+            <div class="timeline-dot">30</div>
+            <div class="timeline-card">
+              <div class="timeline-month">Month 1: Stabilization</div>
+              <div class="timeline-title">Infrastructure Audit</div>
+              <ul>
+                <li>Server migration</li>
+                <li>Security patches</li>
+                <li>Team onboarding</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot">60</div>
+            <div class="timeline-card">
+              <div class="timeline-month">Month 2: Optimization</div>
+              <div class="timeline-title">Process Refinement</div>
+              <ul>
+                <li>Workflow automation</li>
+                <li>Client feedback loop</li>
+                <li>Beta testing</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot">90</div>
+            <div class="timeline-card">
+              <div class="timeline-month">Month 3: Expansion</div>
+              <div class="timeline-title">Market Launch</div>
+              <ul>
+                <li>Global marketing campaign</li>
+                <li>Feature rollout</li>
+                <li>Sales acceleration</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: Conclusion -->
+      <div class="slide" id="slide-4">
+        <div style="display: flex; height: 100%; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+          <h2 class="fade-up">Ready for the Next Step?</h2>
+          <p class="fade-up delay-1">The trajectory is set. The team is aligned. Let's execute.</p>
+          <div style="margin-top: 50px; padding: 30px; border: 1px solid #ddd; border-radius: 12px; background: white;" class="fade-up delay-2">
+            <h3 style="margin-bottom: 10px; color: var(--primary-red);">Contact for Q&A</h3>
+            <p>strategy@corpvision.com</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="navigation-bar">
+      <button class="btn" onclick="prevSlide()" aria-label="Previous Slide">&larr; Prev</button>
+      <div id="slide-counter" style="display: flex; align-items: center; font-weight: bold; color: #777;">1 / 4</div>
+      <button class="btn btn-primary" onclick="nextSlide()" aria-label="Next Slide">Next &rarr;</button>
+    </div>
+
+    <script>
+      let currentSlide = 0;
+      const slides = document.querySelectorAll('.slide');
+      const counterDisplay = document.getElementById('slide-counter');
+      const totalSlides = slides.length;
+
+      // Initialize
+      updateUI();
+
+      // Navigation Functions
+      function nextSlide() {
+        if (currentSlide < totalSlides - 1) {
+          goToSlide(currentSlide + 1);
+        }
+      }
+
+      function prevSlide() {
+        if (currentSlide > 0) {
+          goToSlide(currentSlide - 1);
+        }
+      }
+
+      function goToSlide(index) {
+        // Hide current
+        slides[currentSlide].classList.remove('active');
+        
+        // Update index
+        currentSlide = index;
+        
+        // Show new
+        slides[currentSlide].classList.add('active');
+        
+        // Update Counter
+        updateUI();
+
+        // Trigger animations if specific slide
+        if (slides[currentSlide].id === 'slide-2') {
+          runKPIAnimation();
+        }
+      }
+
+      function updateUI() {
+        counterDisplay.innerText = `${currentSlide + 1} / ${totalSlides}`;
+      }
+
+      // Keyboard Support
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+        if (e.key === 'ArrowLeft') prevSlide();
+      });
+
+      // KPI Animation Logic
+      let kpiAnimated = false;
+      function runKPIAnimation() {
+        if (kpiAnimated) return; // Run only once
+        
+        const counters = document.querySelectorAll('.kpi-value');
+        const speed = 200; // The lower the slower
+
+        counters.forEach(counter => {
+          const updateCount = () => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText.replace(/,/g, ''); // Remove commas for math
+            const inc = target / 40; // Speed divider
+
+            if (count < target) {
+              // Add formatting back
+              let nextNum = Math.ceil(count + inc);
+              if(nextNum > target) nextNum = target;
+              
+              // Format if number is large
+              counter.innerText = nextNum > 999 ? nextNum.toLocaleString() : nextNum;
+              setTimeout(updateCount, 30);
+            } else {
+              counter.innerText = target > 999 ? target.toLocaleString() : target;
+              // Add suffix based on siblings
+              if(counter.nextElementSibling.innerText.includes('%')) {
+                counter.innerText += '%';
+              } else if (counter.nextElementSibling.innerText.includes('Clients')) {
+                counter.innerText += '+';
+              }
+            }
+          };
+          updateCount();
+        });
+        kpiAnimated = true;
+      }
+
+      // Presenter Mode Toggle
+      function togglePresenterMode() {
+        document.body.classList.toggle('presenter-mode');
+        const btnText = document.querySelector('#togglePresenter span');
+        if(document.body.classList.contains('presenter-mode')) {
+          btnText.innerText = "Exit Presenter Mode";
+        } else {
+          btnText.innerText = "Presenter Mode";
+        }
+      }
+    </script>
+  </body>
+</html>
